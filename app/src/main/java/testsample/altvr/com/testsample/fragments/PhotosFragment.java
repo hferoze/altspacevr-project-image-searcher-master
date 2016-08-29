@@ -8,13 +8,10 @@ import android.os.Handler;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Slide;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,23 +27,17 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-
 import testsample.altvr.com.testsample.R;
 import testsample.altvr.com.testsample.adapter.ItemsListAdapter;
 import testsample.altvr.com.testsample.events.ApiErrorEvent;
 import testsample.altvr.com.testsample.events.PhotosEvent;
 import testsample.altvr.com.testsample.events.SavedPhotosEvent;
 import testsample.altvr.com.testsample.service.ApiService;
-import testsample.altvr.com.testsample.util.DatabaseUtil;
-import testsample.altvr.com.testsample.util.ItemListener;
 import testsample.altvr.com.testsample.util.LogUtil;
-import testsample.altvr.com.testsample.util.ParcelableArray;
 import testsample.altvr.com.testsample.util.RecentSearchSuggestionsProvider;
 import testsample.altvr.com.testsample.util.Utils;
-import testsample.altvr.com.testsample.vo.PhotoVo;
 
-public class PhotosFragment extends Fragment{
+public class PhotosFragment extends BaseFragment{
 
     private static PhotosFragment mPhotosFragment = null;
 
@@ -56,9 +47,7 @@ public class PhotosFragment extends Fragment{
     private GridLayoutManager mGridLayoutManager;
     private ApiService mService;
 
-    private ArrayList<PhotoVo> mItemsData = new ArrayList<>();
     private ItemsListAdapter mListAdapter;
-    private DatabaseUtil mDatabaseUtil;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -83,14 +72,11 @@ public class PhotosFragment extends Fragment{
         return mPhotosFragment;
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mService = new ApiService(getActivity());
-        mDatabaseUtil = new DatabaseUtil(getActivity());
         mContext = getContext();
-        setRetainInstance(true);
         setContentLoaded(false);
         setIsSearchTrayOpen(false);
     }
@@ -139,26 +125,6 @@ public class PhotosFragment extends Fragment{
                 return false;
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mItemsData.clear();
     }
 
     @Subscribe
@@ -240,8 +206,8 @@ public class PhotosFragment extends Fragment{
         if (mApiResponse!=null && mListAdapter!=null) {
             if (mApiResponse.data.size()<1)displayErrorText(getString(R.string.no_results_found));
 
-            mItemsData.clear();
-            mItemsData.addAll(mApiResponse.data);
+            itemsData.clear();
+            itemsData.addAll(mApiResponse.data);
             mListAdapter.notifyDataSetChanged();
             mGridLayoutManager.scrollToPositionWithOffset(mLastSavedPosition != -1 ? mLastSavedPosition : 0, mLastSavedPositionOffset);
 
@@ -288,7 +254,7 @@ public class PhotosFragment extends Fragment{
         mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
         mItemsListRecyclerView.setLayoutManager(mGridLayoutManager);
         mItemsListRecyclerView.setHasFixedSize(true);
-        mListAdapter = new ItemsListAdapter(mItemsData, new ItemClickedListener(), mContext);
+        mListAdapter = new ItemsListAdapter(itemsData, new ItemClickedListener(), mContext);
         mItemsListRecyclerView.setAdapter(mListAdapter);
     }
 
@@ -435,7 +401,7 @@ public class PhotosFragment extends Fragment{
     private void serviceRequest(String query){
         saveState(null);
         displayErrorText(null);
-        mItemsData.clear();
+        itemsData.clear();
         mListAdapter.notifyDataSetChanged();
         if(mSwipeRefreshLayout!=null){
             mSwipeRefreshLayout.post(new Runnable() {
@@ -480,58 +446,6 @@ public class PhotosFragment extends Fragment{
                 ((ImageView) mView.findViewById(R.id.error_layout).findViewById(R.id.error_image_view)).setImageResource(R.drawable.no_search_result);
         }else{
             mView.findViewById(R.id.error_layout).setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private boolean savePhotoData(int position) {
-        if (!mDatabaseUtil.checkRecordExists(mItemsData.get(position).id)) {
-            log.d("Adding to db " + mItemsData.get(position).id);
-            mDatabaseUtil.create(mItemsData.get(position));
-            return true;
-        }
-        log.d(mItemsData.get(position).id + " exists... deleting");
-        mDatabaseUtil.delete(mItemsData.get(position));
-        return false;
-    }
-
-    private void launchImageViewer(ArrayList<PhotoVo> itemsData, int position) {
-        Fragment fragment = ImageViewerFragment.getInstance();
-
-        fragment.setEnterTransition(new Slide(Gravity.RIGHT).setDuration(getResources().getInteger(R.integer.animation_delay)));
-        fragment.setReturnTransition(new Slide(Gravity.RIGHT).setDuration(getResources().getInteger(R.integer.animation_delay)));
-
-        Bundle bundle = new Bundle();
-        ParcelableArray pA = new ParcelableArray();
-        pA.setDataArray(itemsData);
-        pA.setStartPosition(position);
-        bundle.putParcelable(getString(R.string.data_parcel_key), pA);
-
-        fragment.setArguments(bundle);
-
-        getFragmentManager().beginTransaction()
-                .add(R.id.fragmentContainer, fragment)
-                .addToBackStack(getString(R.string.main_list_fragment_tag))
-                .commit();
-    }
-
-    private class ItemClickedListener implements ItemListener {
-        @Override
-        public boolean itemClicked(RecyclerView.ViewHolder holder, int position, int resId) {
-            boolean result = false;
-
-            switch (resId){
-                case R.id.save_photo_image_view:
-                    result = savePhotoData(position);
-                    break;
-                case R.id.share_photo_image_view:
-                    result = Utils.shareImage(mContext, getActivity(), mItemsData.get(position).webformatURL);
-                    break;
-                case R.id.item_image_view:
-                    launchImageViewer(mItemsData, position);
-                    break;
-            }
-
-            return result;
         }
     }
 }

@@ -3,12 +3,9 @@ package testsample.altvr.com.testsample.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Slide;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,24 +14,17 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-
 import testsample.altvr.com.testsample.R;
 import testsample.altvr.com.testsample.adapter.SavedPhotosItemsListAdapter;
 import testsample.altvr.com.testsample.events.ApiErrorEvent;
 import testsample.altvr.com.testsample.events.PhotosEvent;
 import testsample.altvr.com.testsample.events.SavedPhotosEvent;
-import testsample.altvr.com.testsample.util.DatabaseUtil;
-import testsample.altvr.com.testsample.util.ItemListener;
 import testsample.altvr.com.testsample.util.LogUtil;
-import testsample.altvr.com.testsample.util.ParcelableArray;
-import testsample.altvr.com.testsample.util.Utils;
-import testsample.altvr.com.testsample.vo.PhotoVo;
 
 /**
  * Created by hassan on 8/25/2016.
  */
-public class SavedPhotosFragment extends Fragment {
+public class SavedPhotosFragment extends BaseFragment {
 
     private static SavedPhotosFragment mSavedPhotosFragment = null;
 
@@ -44,10 +34,6 @@ public class SavedPhotosFragment extends Fragment {
     private RecyclerView mSavedItemsListRecyclerView;
     private SavedPhotosItemsListAdapter mListAdapter;
 
-    private ArrayList<PhotoVo> mItemsData = new ArrayList<>();
-
-    private DatabaseUtil mDatabaseUtil;
-
     int mLastSavedPosition = -1, mLastSavedPositionOffset = -1;
 
     public static synchronized SavedPhotosFragment getInstance(){
@@ -56,45 +42,14 @@ public class SavedPhotosFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDatabaseUtil = new DatabaseUtil(getActivity());
-        setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.image_searcher_fragment_saved_photos, container, false);
-        return view;
+        return inflater.inflate(R.layout.image_searcher_fragment_saved_photos, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         loadSavedStates(savedInstanceState);
         initViews(view);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-        if (mDatabaseUtil==null)mDatabaseUtil = new DatabaseUtil(getActivity());
-        mDatabaseUtil.readAll();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mItemsData.clear();
-        mListAdapter = null;
     }
 
     @Override
@@ -113,8 +68,8 @@ public class SavedPhotosFragment extends Fragment {
         if (event.data.size()<1)
             log.e("No results found");
 
-        mItemsData.clear();
-        mItemsData.addAll(event.data);
+        itemsData.clear();
+        itemsData.addAll(event.data);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -173,50 +128,9 @@ public class SavedPhotosFragment extends Fragment {
         mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
         mSavedItemsListRecyclerView.setLayoutManager(mGridLayoutManager);
         mSavedItemsListRecyclerView.setHasFixedSize(true);
-        mListAdapter = new SavedPhotosItemsListAdapter(mItemsData, new ItemClickedListener(), getContext());
+        mListAdapter = new SavedPhotosItemsListAdapter(itemsData, new ItemClickedListener(), getContext());
         mSavedItemsListRecyclerView.setAdapter(mListAdapter);
         mGridLayoutManager.scrollToPositionWithOffset(mLastSavedPosition != -1 ? mLastSavedPosition : 0, mLastSavedPositionOffset);
     }
 
-    private void launchImageViewer(ArrayList<PhotoVo> itemsData, int position) {
-        Fragment fragment = ImageViewerFragment.getInstance();
-
-        fragment.setEnterTransition(new Slide(Gravity.RIGHT).setDuration(getResources().getInteger(R.integer.animation_delay)));
-        fragment.setReturnTransition(new Slide(Gravity.RIGHT).setDuration(getResources().getInteger(R.integer.animation_delay)));
-
-        Bundle bundle = new Bundle();
-        ParcelableArray pA = new ParcelableArray();
-        pA.setDataArray(itemsData);
-        pA.setStartPosition(position);
-        bundle.putParcelable(getString(R.string.data_parcel_key), pA);
-
-        fragment.setArguments(bundle);
-
-        getFragmentManager().beginTransaction()
-                .add(R.id.fragmentContainer, fragment)
-                .addToBackStack(getString(R.string.main_list_fragment_tag))
-                .commit();
-    }
-
-    private class ItemClickedListener implements ItemListener {
-        @Override
-        public boolean itemClicked(RecyclerView.ViewHolder holder, int position, int resId) {
-            boolean result = false;
-            switch (resId){
-                case R.id.save_photo_image_view:
-                    log.d(mItemsData.get(position).id + " exists... deleting");
-                    mDatabaseUtil.delete(mItemsData.get(position));
-                    mDatabaseUtil.readAll();
-                    result = false;
-                    break;
-                case R.id.share_photo_image_view:
-                    result = Utils.shareImage(getContext(), getActivity(), mItemsData.get(position).webformatURL);
-                    break;
-                case R.id.item_image_view:
-                    launchImageViewer(mItemsData, position);
-                    break;
-            }
-            return result;
-        }
-    }
 }
