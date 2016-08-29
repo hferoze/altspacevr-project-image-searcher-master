@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notes
+    1. create temp folder temp_image under getFilesDir()
+    2. specify path=temp_image/ in this file
+    3. specify file provider in manifest
+    4. save file in getFilesDir()/temp_image/ e.g. getFilesDir()/temp_image/temp.jpg
+    5. use Utils.getFileProviderImage to share image
+-->
+<paths>
+    <files-path path="temp_image/" name="temp" />
+</paths>

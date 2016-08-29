@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Image Adapter -->
+
+    <dimen name="card_view_margin_start">64dp</dimen>
+    <dimen name="card_view_margin_end">64dp</dimen>
+
+
+    <!-- search box -->
+    <dimen name="search_bar_margin_right">136dp</dimen>
+    <dimen name="search_box_layout_clear_history_margin_top">12dp</dimen>
+
+</resources>

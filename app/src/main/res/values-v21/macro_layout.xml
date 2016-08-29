@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Image Adapter -->
+
+    <dimen name="card_view_elevation">4dp</dimen>
+    <dimen name="card_view_corner">1dp</dimen>
+    <dimen name="card_view_margin_top">8dp</dimen>
+    <dimen name="card_view_margin_bottom">8dp</dimen>
+    <dimen name="card_view_margin_start">0dp</dimen>
+    <dimen name="card_view_margin_end">0dp</dimen>
+
+    <dimen name="user_info_layout_margin">12dp</dimen>
+    <dimen name="user_image_width">32dp</dimen>
+    <dimen name="user_name_text_view_padding">8dp</dimen>
+
+    <dimen name="photo_views_layout_margin">8dp</dimen>
+    <dimen name="photo_views_image_width">24dp</dimen>
+    <dimen name="photo_views_text_view_padding">4dp</dimen>
+
+    <dimen name="photo_info_layout_margin">12dp</dimen>
+    <dimen name="photo_info_tags_text_view_padding_left">4dp</dimen>
+    <dimen name="photo_info_tags_text_view_padding_right">4dp</dimen>
+
+    <dimen name="photo_info_likes_text_view_padding_left">4dp</dimen>
+    <dimen name="photo_info_likes_text_view_padding_right">4dp</dimen>
+    <dimen name="photo_info_likes_text_size">18sp</dimen>
+
+    <dimen name="photo_info_share_image_width">24dp</dimen>
+    <dimen name="photo_info_share_image_margin_end">16dp</dimen>
+
+    <dimen name="photo_info_save_image_width">24dp</dimen>
+    <dimen name="photo_info_save_image_margin_end">4dp</dimen>
+
+    <dimen name="photo_info_comments_image_width">24dp</dimen>
+    <dimen name="photo_info_comments_image_margin_end">16dp</dimen>
+    <dimen name="photo_info_comments_text_view_padding">8dp</dimen>
+
+    <dimen name="tab_bar_height">48dp</dimen>
+    <dimen name="close_search_tray_top_margin">36dp</dimen>
+
+    <!-- search bar -->
+    <dimen name="search_bar_margin_left">8dp</dimen>
+    <dimen name="search_bar_margin_right">16dp</dimen>
+    <dimen name="search_bar_height">46dp</dimen>
+
+    <dimen name="search_layout_back_btn_margin_top">8dp</dimen>
+    <dimen name="search_layout_back_btn_width">48dp</dimen>
+
+    <dimen name="search_box_layout_margin_bottom">12dp</dimen>
+    <dimen name="search_box_layout_margin_top">12dp</dimen>
+
+    <dimen name="viewer_back_btn_width">48dp</dimen>
+
+</resources>

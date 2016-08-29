@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/close_search_tray_image_view"
+        android:layout_marginTop="@dimen/search_layout_back_btn_margin_top"
+        android:padding="12dp"
+        android:layout_width="@dimen/search_layout_back_btn_width"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close_search_tray_btn"
+        android:adjustViewBounds="true"
+        android:tint="@color/grey300"
+        android:rotation="90"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    <FrameLayout
+        android:layout_marginStart="52dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_bar_height"
+            android:layout_gravity="bottom"
+            android:background="@color/white">
+        </SearchView>
+
+        <TextView
+            android:id="@+id/search_hint_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:layout_marginStart="50dp"
+            android:text="@string/search_title"
+            android:textColor="@color/grey300"
+            android:textSize="18sp" />
+    </FrameLayout>
+
+</FrameLayout>
