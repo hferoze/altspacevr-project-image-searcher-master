@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import testsample.altvr.com.testsample.R;
-import testsample.altvr.com.testsample.adapter.SavedPhotosItemsListAdapter;
+import testsample.altvr.com.testsample.adapter.ImagesListAdapter;
 import testsample.altvr.com.testsample.events.ApiErrorEvent;
 import testsample.altvr.com.testsample.events.PhotosEvent;
 import testsample.altvr.com.testsample.events.SavedPhotosEvent;
@@ -32,7 +32,7 @@ public class SavedPhotosFragment extends BaseFragment {
 
     private GridLayoutManager mGridLayoutManager;
     private RecyclerView mSavedItemsListRecyclerView;
-    private SavedPhotosItemsListAdapter mListAdapter;
+    private ImagesListAdapter mListAdapter;
 
     int mLastSavedPosition = -1, mLastSavedPositionOffset = -1;
 
@@ -128,7 +128,7 @@ public class SavedPhotosFragment extends BaseFragment {
         mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
         mSavedItemsListRecyclerView.setLayoutManager(mGridLayoutManager);
         mSavedItemsListRecyclerView.setHasFixedSize(true);
-        mListAdapter = new SavedPhotosItemsListAdapter(itemsData, new ItemClickedListener(), getContext());
+        mListAdapter = new ImagesListAdapter(itemsData, new ItemClickedListener(), getContext());
         mSavedItemsListRecyclerView.setAdapter(mListAdapter);
         mGridLayoutManager.scrollToPositionWithOffset(mLastSavedPosition != -1 ? mLastSavedPosition : 0, mLastSavedPositionOffset);
     }

@@ -18,7 +18,10 @@ import testsample.altvr.com.testsample.util.ItemListener;
 import testsample.altvr.com.testsample.util.Utils;
 import testsample.altvr.com.testsample.vo.PhotoVo;
 
-public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+/**
+ * Created by hassan on 8/29/2016.
+ */
+public class ImagesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final ItemListener mListener;
     private List<PhotoVo> mItems;
@@ -27,9 +30,9 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     ItemViewHolder itemViewHolder;
 
-    public ItemsListAdapter(List<PhotoVo> items, ItemListener listener, Context context) {
-        mItems = items;
-        mListener = listener;
+    public ImagesListAdapter(List<PhotoVo> items, ItemListener listener, Context context) {
+        this.mItems = items;
+        this.mListener = listener;
         mContext = context;
         mDbUtil = new DatabaseUtil(mContext);
     }
@@ -61,7 +64,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             Utils.loadImage(mContext, photoVo.webformatURL, viewHolder.itemImage);
 
-            String likes = photoVo.likes + " Likes";
+            final String likes = photoVo.likes + " Likes";
             viewHolder.likes.setText(likes);
 
             String views = ""+photoVo.views;
@@ -70,7 +73,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             String comments = ""+photoVo.comments;
             viewHolder.comments.setText(comments);
 
-            if(!TextUtils.isEmpty(mItems.get(position).tags))
+            if(!TextUtils.isEmpty(photoVo.tags))
                 viewHolder.itemTags.setText(photoVo.tags);
             else
                 viewHolder.itemTags.setText("");
@@ -85,7 +88,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             else
                 viewHolder.userName.setText("");
 
-            setPhotoSaved(viewHolder, mDbUtil.checkRecordExists(photoVo.id));
+            setPhotoSaved(viewHolder, position, mDbUtil.checkRecordExists(photoVo.id), false);
 
             viewHolder.itemImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,7 +107,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             viewHolder.savePhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setPhotoSaved(viewHolder, mListener.itemClicked(viewHolder, position, viewHolder.savePhoto.getId()));
+                    setPhotoSaved(viewHolder, position, mListener.itemClicked(viewHolder, position, viewHolder.savePhoto.getId()), true);
                 }
             });
         }
@@ -115,11 +118,12 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * @param viewHolder current view holder
      * @param saved true or false
      */
-    private void setPhotoSaved(RecyclerView.ViewHolder viewHolder, boolean saved){
+    private void setPhotoSaved(RecyclerView.ViewHolder viewHolder, int position, boolean saved, boolean changed){
         if (saved) {
             ((ItemViewHolder) viewHolder).savePhoto.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart, null));
         } else {
             ((ItemViewHolder) viewHolder).savePhoto.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart_outline, null));
+            if(changed)notifyItemRemoved(position);
         }
         ((ItemViewHolder) viewHolder).savePhoto.getDrawable().setTint(mContext.getResources().getColor(R.color.colorPrimaryLight));
     }

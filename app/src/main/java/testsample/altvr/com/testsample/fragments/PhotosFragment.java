@@ -28,7 +28,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import testsample.altvr.com.testsample.R;
-import testsample.altvr.com.testsample.adapter.ItemsListAdapter;
+import testsample.altvr.com.testsample.adapter.ImagesListAdapter;
 import testsample.altvr.com.testsample.events.ApiErrorEvent;
 import testsample.altvr.com.testsample.events.PhotosEvent;
 import testsample.altvr.com.testsample.events.SavedPhotosEvent;
@@ -47,7 +47,7 @@ public class PhotosFragment extends BaseFragment{
     private GridLayoutManager mGridLayoutManager;
     private ApiService mService;
 
-    private ItemsListAdapter mListAdapter;
+    private ImagesListAdapter mListAdapter;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -254,7 +254,7 @@ public class PhotosFragment extends BaseFragment{
         mGridLayoutManager = new GridLayoutManager(getActivity(), 1);
         mItemsListRecyclerView.setLayoutManager(mGridLayoutManager);
         mItemsListRecyclerView.setHasFixedSize(true);
-        mListAdapter = new ItemsListAdapter(itemsData, new ItemClickedListener(), mContext);
+        mListAdapter = new ImagesListAdapter(itemsData, new ItemClickedListener(), mContext);
         mItemsListRecyclerView.setAdapter(mListAdapter);
     }
 
